@@ -7,6 +7,3 @@ coverage:
     patch:
       default:
         target: 90%
-
-ignore:
-  - "boot-ops-sample"
