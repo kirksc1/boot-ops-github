@@ -1,0 +1,79 @@
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'maven-publish'
+
+    group 'com.github.kirksc1.bootops'
+    version '0.0.1-SNAPSHOT'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            // Choose whatever name you like
+            name = "GitHubPackages"
+            // The url of the repository that contains the published artifacts
+            url = "https://maven.pkg.github.com/kirksc1/boot-ops"
+            credentials {
+                // The credentials (described in the next section)
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/kirksc1/boot-ops"
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
+
+dependencies {
+    implementation 'com.github.kirksc1.bootops:boot-ops-core:0.0.1-SNAPSHOT'
+
+    implementation project(':boot-ops-github-repository')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test:2.7.0')
+}
+
+tasks.register("codeCoverageReport", JacocoReport) {
+    reports {
+        xml.enabled true
+    }
+    subprojects {
+        subproject -> subproject.plugins.withType(JacocoPlugin).configureEach {
+            subproject.tasks.matching({t -> t.extensions.findByType(JacocoTaskExtension) }).configureEach {
+                testTask ->
+                sourceSets subproject.sourceSets.main
+                executionData(testTask)
+            }
+
+            subproject.tasks.matching({ t -> t.extensions.findByType(JacocoTaskExtension) }).forEach {
+                rootProject.tasks.codeCoverageReport.dependsOn(it)
+            }
+        }
+    }
+}

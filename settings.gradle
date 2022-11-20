@@ -1,0 +1,3 @@
+rootProject.name = 'boot-ops-github'
+include 'boot-ops-github-repository'
+
