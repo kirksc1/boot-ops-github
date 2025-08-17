@@ -6,8 +6,8 @@ allprojects {
     group 'com.github.kirksc1.bootops'
     version '0.0.1-SNAPSHOT'
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+//    sourceCompatibility = JavaVersion.VERSION_21
+//    targetCompatibility = JavaVersion.VERSION_21
 
     repositories {
         mavenCentral()
@@ -48,15 +48,22 @@ allprojects {
     }
 }
 
+ext{
+    //dependencies
+    springBootVersion = '3.5.4'
+    lombokVersion = '1.18.38'
+}
+
 dependencies {
     implementation 'com.github.kirksc1.bootops:boot-ops-core:0.0.1-SNAPSHOT'
 
     implementation project(':boot-ops-github-repository')
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.7.0')
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test:2.7.0')
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$rootProject.springBootVersion")
 }
 
 tasks.register("codeCoverageReport", JacocoReport) {
